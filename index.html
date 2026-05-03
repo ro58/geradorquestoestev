@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Treino TEV</title>
+  <style>
+    body { font-family: Arial; max-width: 700px; margin: 40px auto; }
+    button { display: block; margin: 10px 0; padding: 10px; width: 100%; cursor: pointer; }
+    .correta { background-color: #4CAF50; color: white; }
+    .errada { background-color: #f44336; color: white; }
+  </style>
+</head>
+<body>
+
+<h2>Qual fator tem MAIOR risco para TEV?</h2>
+<div id="opcoes"></div>
+<button onclick="novaQuestao()">Nova questão</button>
+
+<script>
+const fortes = [
+  "Fratura (perna ou quadril)",
+  "Prótese de quadril ou joelho",
+  "Cirurgia de grande porte",
+  "Grandes traumas",
+  "Lesão medular"
+];
+
+const intermediarios = [
+  "Artroscopia de joelho",
+  "Acesso venoso central",
+  "Quimioterapia",
+  "Cardiopatia ou insuficiência respiratória",
+  "Terapia hormonal",
+  "Malignidade",
+  "Contraceptivos",
+  "AVC com paralisia",
+  "Gestação/puerpério",
+  "TEV prévio",
+  "Trombofilia"
+];
+
+const fracos = [
+  "Acamado > 3 dias",
+  "Viagem prolongada",
+  "Idade avançada",
+  "Cirurgia laparoscópica",
+  "Obesidade",
+  "Varizes"
+];
+
+function randomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
+
+function escolher3(arr) {
+  let copia = [...arr];
+  shuffle(copia);
+  return copia.slice(0, 3);
+}
+
+function novaQuestao() {
+  // 🔹 limpar estados antigos (segurança)
+  const botoesAntigos = document.querySelectorAll("#opcoes button");
+  botoesAntigos.forEach(b => {
+    b.disabled = false;
+    b.classList.remove("correta", "errada");
+  });
+
+  const tipo = Math.random() < 0.5 ? "forte" : "intermediario";
+
+  let correta;
+  let alternativas = [];
+
+  if (tipo === "forte") {
+    correta = randomItem(fortes);
+    const pool = [...intermediarios, ...fracos];
+    alternativas = escolher3(pool);
+  } else {
+    correta = randomItem(intermediarios);
+    alternativas = escolher3(fracos);
+  }
+
+  alternativas.push(correta);
+  alternativas = shuffle(alternativas);
+
+  const container = document.getElementById("opcoes");
+  container.innerHTML = "";
+
+  alternativas.forEach(opcao => {
+    const btn = document.createElement("button");
+    btn.innerText = opcao;
+
+    btn.onclick = () => {
+      const botoes = document.querySelectorAll("#opcoes button");
+      botoes.forEach(b => b.disabled = true);
+
+      if (opcao === correta) {
+        btn.classList.add("correta");
+      } else {
+        btn.classList.add("errada");
+
+        botoes.forEach(b => {
+          if (b.innerText === correta) {
+            b.classList.add("correta");
+          }
+        });
+      }
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+// iniciar primeira questão
+novaQuestao();
+</script>
+
+</body>
+</html>
